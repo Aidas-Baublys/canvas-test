@@ -74,9 +74,24 @@ class FlowFieldEffect {
   }
 
   #drawLine(angle, x, y) {
+    let posX = x;
+    let posY = y;
+
+    let dx = mouse.x - posX;
+    let dy = mouse.y - posY;
+
+    let distance = dx * dx + dy * dy;
+
+    if (distance > 150000) distance = 600000;
+    else if (distance < 100000) distance = 100000;
+
+    const length = distance * 0.0001;
     this.#ctx.beginPath();
     this.#ctx.moveTo(x, y);
-    this.#ctx.lineTo(x + Math.cos(angle) * 30, y + Math.sin(angle) * 30);
+    this.#ctx.lineTo(
+      x + Math.cos(angle) * length,
+      y + Math.sin(angle) * length,
+    );
     this.#ctx.stroke();
   }
 
@@ -87,6 +102,8 @@ class FlowFieldEffect {
     if (this.timer > this.interval) {
       this.#ctx.clearRect(0, 0, this.#width, this.#height);
       this.radius += this.vr;
+
+      if (this.radius > 10 || this.radius < -10) this.vr *= -1;
 
       for (let y = 0; y < this.#height; y += this.cellSize) {
         for (let x = 0; x < this.#width; x += this.cellSize) {
